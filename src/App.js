@@ -1,24 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes ,Redirect} from 'react-router-dom';
+import NavigationBar from './components/NavigationBar';
+import Home from './components/Home';
+import Products from './components/Products';
+import Login from "./components/Login"
+import { useAuth } from './components/AuthContext';
 
-function App() {
+const PrivateRoute =({component: Component, ...rest}) =>{
+  const {isAuthenticated} = useAuth();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Route
+      {...rest}
+      render={(props)=>
+      isAuthenticated? <Component {...props} /> : <Redirect to="/login" />
+      }
+    />
+  );
+};
+
+
+const App = () => {
+  return (
+    <Router>
+      <NavigationBar />
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/login' element={<Login />} />
+        <PrivateRoute path='/products' element={<Products />} />
+      </Routes>
+    </Router>
   );
 }
 
